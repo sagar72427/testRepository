@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <flow name="apessentialsFlow">
+        <http:listener config-ref="hellloWorld_HTTP_Listener_Configuration1" path="/deepu" doc:name="HTTP" allowedMethods="GET"/>
+        <set-payload value="#['Hello World'.toUpperCase()]" doc:name="setpayload"/>
+        <set-property propertyName="qpname" value="#[message.inboundProperties.'http.query.params'.name]" doc:name="Property"/>
+        <logger level="INFO" doc:name="Logger" message="#[message.outboundProperties.qpname]"/>
+    </flow>
+    <flow name="muleHowToUseProperties_REstful_flow" doc:description="To define a property in mule i.e, for example we need to define the port name of the listener dynamically then we use ${variable_name} = ${http.port} and define the http.port in src/main/resources create a new folder with .properties extention 
+for example
+[port: ${http.port}
+in confg-dev.prooperties
+http.port = 6623] ==port:6623
+we can also define the property name dynamically by ${property name} and defining it src/main/app mule-app.properties
+
+for example 
+[config-${mule.app}.properties
+In mule-app.properties
+mule.app = dev] == config-dev.properties ">
+        <http:listener config-ref="Delta6606_HTTP_Listener_Configuration" path="/" allowedMethods="GET" doc:name="HTTP"/>
+        <ws:consumer config-ref="Delta_Web_Service_Consumer" operation="listAllFlights" doc:name="Web Service Consumer"/>
+    </flow>
+    <flow name="restful_flow">
+        <http:listener config-ref="restful9925_HTTP_Listener_Configuration" path="/united/{destination}" allowedMethods="GET" doc:name="HTTP"/>
+        <http:request config-ref="Restful_HTTP_Request_Configuration" path="/{destination}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="destination" value="#[message.inboundProperties.'http.uri.params'.destination]"/>
+            </http:request-builder>
+        </http:request>
+    </flow>
+</mule>
